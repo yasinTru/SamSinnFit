@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SamSin - Beslenme & Spor Takibi</title>
+  <style>
+    :root {
+      --primary: #4a6fa5;
+      --secondary: #166088;
+      --accent: #4ecdc4;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --success: #28a745;
+      --danger: #dc3545;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f0f4f8;
+      color: var(--dark);
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .user-select {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-select select {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+      background-color: white;
+    }
+
+    .settings-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--secondary);
+    }
+
+    /* Calendar Section */
+    .calendar-section {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .calendar-controls {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .calendar-controls button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .calendar-controls h2 {
+      font-size: 1.5rem;
+      color: var(--secondary);
+      margin: 0;
+    }
+
+    .view-toggle {
+      display: flex;
+      gap: 10px;
+    }
+
+    .view-toggle button {
+      padding: 8px 16px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .view-toggle button.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      margin-top: 15px;
+    }
+
+    .calendar-day {
+      min-height: 80px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 8px;
+      text-align: center;
+      font-size: 0.9rem;
+      background: white;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .calendar-day:hover {
+      background-color: #f5f9ff;
+    }
+
+    .calendar-day.selected {
+      border: 2px solid var(--primary);
+      background-color: #e6f2ff;
+    }
+
+    .calendar-day.has-food {
+      border-left: 4px solid #ff9a9e;
+    }
+
+    .calendar-day.has-exercise {
+      border-left: 4px solid #aec6cf;
+    }
+
+    .calendar-day .day-number {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .calendar-day .icon {
+      font-size: 0.8rem;
+      margin-top: 3px;
+    }
+
+    .weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: var(--secondary);
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    /* Daily Details */
+    .daily-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .daily-details {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .card h3 {
+      color: var(--secondary);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card h3 .icon {
+      font-size: 1.5rem;
+    }
+
+    .food-list, .exercise-list {
+      margin-bottom: 15px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      margin-bottom: 8px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      align-items: center;
+    }
+
+    .item .delete {
+      color: var(--danger);
+      cursor: pointer;
+      font-weight: bold;
+      background: none;
+      border: none;
+      padding: 0;
+      margin-left: 10px;
+    }
+
+    .total {
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 15px;
+    }
+
+    .add-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+      width: 100%;
+    }
+
+    .form-panel {
+      margin-top: 15px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      display: none;
+    }
+
+    .form-panel.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: var(--secondary);
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .form-actions button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    .btn-save {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-cancel {
+      background: #6c757d;
+      color: white;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .modal h2 {
+      color: var(--secondary);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .modal .form-group {
+      margin-bottom: 15px;
+    }
+
+    .modal .form-actions {
+      justify-content: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      .calendar {
+        grid-template-columns: repeat(7, 1fr);
+        gap: 3px;
+      }
+      .calendar-day {
+        min-height: 60px;
+        font-size: 0.8rem;
+      }
+      .calendar-controls h2 {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Header -->
+    <header>
+      <div class="logo">SamSinn Fitness</div>
+      <div class="user-select">
+        <select id="userSelect">
+          <option value="ayse">Sema Hatun</option>
+          <option value="ali">Ya Sin</option>
+        </select>
+      </div>
+      <button class="settings-btn" id="openSettings">⚙️</button>
+    </header>
+
+    <!-- Calendar Section -->
+    <section class="calendar-section">
+      <div class="calendar-header">
+        <div class="calendar-controls">
+          <button id="prevMonth">&lt;</button>
+          <h2 id="currentMonth">Ekim 2023</h2>
+          <button id="nextMonth">&gt;</button>
+        </div>
+        <div class="view-toggle">
+          <button id="viewMonth" class="active">Aylık</button>
+          <button id="viewWeek">Haftalık</button>
+        </div>
+      </div>
+      <div class="weekdays">
+        <div>Paz</div><div>Pzt</div><div>Sal</div><div>Çar</div><div>Per</div><div>Cuma</div><div>Cmt</div>
+      </div>
+      <div class="calendar" id="calendar"></div>
+    </section>
+
+    <!-- Daily Details -->
+    <section class="daily-details">
+      <!-- Beslenme -->
+      <div class="card">
+        <h3><span class="icon">🍎</span> BESLENME KAYDI</h3>
+        <div class="food-list" id="foodList">
+          <!-- Dinamik içerik -->
+        </div>
+        <div class="total">Toplam Kalori: <span id="totalCalories">0</span> kcal</div>
+        <button class="add-btn" id="addFoodBtn">+ Yeni Besin Ekle</button>
+        <div class="form-panel" id="foodForm">
+          <div class="form-group">
+            <label for="foodName">Yiyecek</label>
+            <input type="text" id="foodName" placeholder="Örn: Yulaf ezmesi">
+          </div>
+          <div class="form-group">
+            <label for="foodCalories">Kalori (kcal)</label>
+            <input type="number" id="foodCalories" placeholder="0" min="0">
+          </div>
+          <div class="form-group">
+            <label for="foodMeal">Öğün</label>
+            <select id="foodMeal">
+              <option value="sabah">Sabah</option>
+              <option value="ogle">Öğle</option>
+              <option value="aksam">Akşam</option>
+              <option value="ara">Ara Öğün</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button class="btn-save" id="saveFood">Kaydet</button>
+            <button class="btn-cancel" id="cancelFood">İptal</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spor -->
+      <div class="card">
+        <h3><span class="icon">🏋️‍♂️</span> SPOR KAYDI</h3>
+        <div class="exercise-list" id="exerciseList">
+          <!-- Dinamik içerik -->
+        </div>
+        <button class="add-btn" id="addExerciseBtn">+ Yeni Spor Ekle</button>
+        <div class="form-panel" id="exerciseForm">
+          <div class="form-group">
+            <label for="exerciseName">Aktivite</label>
+            <input type="text" id="exerciseName" placeholder="Örn: Koşu, Şınav">
+          </div>
+          <div class="form-group">
+            <label for="exerciseDuration">Süre / Tekrar</label>
+            <input type="text" id="exerciseDuration" placeholder="Örn: 30 dk, 3x10">
+          </div>
+          <div class="form-group">
+            <label for="exerciseNotes">Notlar (opsiyonel)</label>
+            <input type="text" id="exerciseNotes" placeholder="İsteğe bağlı">
+          </div>
+          <div class="form-actions">
+            <button class="btn-save" id="saveExercise">Kaydet</button>
+            <button class="btn-cancel" id="cancelExercise">İptal</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Ayarlar Modal -->
+  <div class="modal" id="settingsModal">
+    <div class="modal-content">
+      <h2>Kişi Ayarları</h2>
+      <div class="form-group">
+        <label for="user1Name">Kişi 1 Adı:</label>
+        <input type="text" id="user1Name" value="Sema Hatun">
+      </div>
+      <div class="form-group">
+        <label for="user2Name">Kişi 2 Adı:</label>
+        <input type="text" id="user2Name" value="Ya Sin">
+      </div>
+      <div class="form-actions">
+        <button class="btn-cancel" id="closeSettings">İptal</button>
+        <button class="btn-save" id="saveSettings">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Veri Yapısı
+    const state = {
+      users: [
+        { id: 'ayse', name: 'Sema Hatun' },
+        { id: 'ali', name: 'Ya Sin' }
+      ],
+      selectedUser: 'ayse',
+      currentView: 'month', // 'month' veya 'week'
+      currentDate: new Date(),
+      foods: {},
+      exercises: {}
+    };
+
+    // Veri başlatma
+    function initStorage() {
+      const saved = localStorage.getItem('fitIkiliData');
+      if (saved) {
+        const data = JSON.parse(saved);
+        state.foods = data.foods || {};
+        state.exercises = data.exercises || {};
+        state.users = data.users || state.users;
+        state.selectedUser = data.selectedUser || 'ayse';
+        state.currentDate = new Date(data.currentDate || new Date());
+      }
+
+      // Her kullanıcı için boş veri yapıları oluştur
+      state.users.forEach(user => {
+        if (!state.foods[user.id]) state.foods[user.id] = {};
+        if (!state.exercises[user.id]) state.exercises[user.id] = {};
+      });
+    }
+
+    // Veriyi kaydet
+    function saveStorage() {
+      localStorage.setItem('fitIkiliData', JSON.stringify({
+        foods: state.foods,
+        exercises: state.exercises,
+        users: state.users,
+        selectedUser: state.selectedUser,
+        currentDate: state.currentDate.toISOString()
+      }));
+    }
+
+    // Takvim oluştur
+    function renderCalendar() {
+      const calendar = document.getElementById('calendar');
+      calendar.innerHTML = '';
+
+      const year = state.currentDate.getFullYear();
+      const month = state.currentDate.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const daysInMonth = lastDay.getDate();
+      const startingDayOfWeek = firstDay.getDay();
+
+      // Haftalık görünümde sadece 7 gün göster
+      if (state.currentView === 'week') {
+        const today = new Date();
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - today.getDay()); // Pazar günü başla
+        for (let i = 0; i < 7; i++) {
+          const day = new Date(weekStart);
+          day.setDate(weekStart.getDate() + i);
+
+          const dayStr = day.toISOString().split('T')[0]; // YYYY-MM-DD
+          const dayNum = day.getDate();
+
+          const dayEl = document.createElement('div');
+          dayEl.className = 'calendar-day';
+          if (day.toDateString() === new Date().toDateString()) {
+            dayEl.classList.add('selected');
+          }
+
+          // Veri var mı?
+          if (state.foods[state.selectedUser] && state.foods[state.selectedUser][dayStr]) dayEl.classList.add('has-food');
+          if (state.exercises[state.selectedUser] && state.exercises[state.selectedUser][dayStr]) dayEl.classList.add('has-exercise');
+
+          dayEl.innerHTML = `
+            <div class="day-number">${dayNum}</div>
+            ${state.foods[state.selectedUser] && state.foods[state.selectedUser][dayStr] ? '<div class="icon">🍎</div>' : ''}
+            ${state.exercises[state.selectedUser] && state.exercises[state.selectedUser][dayStr] ? '<div class="icon">🏋️‍♂️</div>' : ''}
+          `;
+          dayEl.addEventListener('click', () => selectDay(dayStr));
+          calendar.appendChild(dayEl);
+        }
+      } else {
+        // Aylık görünüm
+        for (let i = 0; i < startingDayOfWeek; i++) {
+          const empty = document.createElement('div');
+          empty.className = 'calendar-day empty';
+          calendar.appendChild(empty);
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+          const date = new Date(year, month, day);
+          const dayStr = date.toISOString().split('T')[0];
+
+          const dayEl = document.createElement('div');
+          dayEl.className = 'calendar-day';
+          if (date.toDateString() === new Date().toDateString()) {
+            dayEl.classList.add('selected');
+          }
+
+          // Veri var mı?
+          if (state.foods[state.selectedUser] && state.foods[state.selectedUser][dayStr]) dayEl.classList.add('has-food');
+          if (state.exercises[state.selectedUser] && state.exercises[state.selectedUser][dayStr]) dayEl.classList.add('has-exercise');
+
+          dayEl.innerHTML = `
+            <div class="day-number">${day}</div>
+            ${state.foods[state.selectedUser] && state.foods[state.selectedUser][dayStr] ? '<div class="icon">🍎</div>' : ''}
+            ${state.exercises[state.selectedUser] && state.exercises[state.selectedUser][dayStr] ? '<div class="icon">🏋️‍♂️</div>' : ''}
+          `;
+          dayEl.addEventListener('click', () => selectDay(dayStr));
+          calendar.appendChild(dayEl);
+        }
+      }
+
+      document.getElementById('currentMonth').textContent = `${new Date(year, month).toLocaleString('tr-TR', { month: 'long', year: 'numeric' })}`;
+    }
+
+    // Gün seçimi
+    function selectDay(dayStr) {
+      // Seçili günleri temizle
+      document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
+      // Yeni seçiliği ekle
+      const selectedDayEl = [...document.querySelectorAll('.calendar-day')].find(d => {
+        const dayNumber = d.querySelector('.day-number');
+        if (!dayNumber) return false;
+        
+        if (state.currentView === 'week') {
+          // Haftalık görünümde tarih karşılaştırması yap
+          const date = new Date(dayStr);
+          const today = new Date();
+          return date.toDateString() === today.toDateString();
+        } else {
+          // Aylık görünümde gün numarası karşılaştırması yap
+          const date = new Date(dayStr);
+          return dayNumber.textContent === date.getDate().toString();
+        }
+      });
+      if (selectedDayEl) selectedDayEl.classList.add('selected');
+
+      // Günlük verileri yükle
+      loadDailyData(dayStr);
+    }
+
+    // Günlük verileri yükle
+    function loadDailyData(dayStr) {
+      const foodList = document.getElementById('foodList');
+      const exerciseList = document.getElementById('exerciseList');
+      const totalCal = document.getElementById('totalCalories');
+
+      foodList.innerHTML = '';
+      exerciseList.innerHTML = '';
+
+      let total = 0;
+
+      // Beslenme
+      if (state.foods[state.selectedUser] && state.foods[state.selectedUser][dayStr]) {
+        state.foods[state.selectedUser][dayStr].forEach(item => {
+          const itemEl = document.createElement('div');
+          itemEl.className = 'item';
+          itemEl.innerHTML = `
+            ${item.name} (${item.meal}) - ${item.calories} kcal
+            <button class="delete" data-id="${item.id}">x</button>
+          `;
+          foodList.appendChild(itemEl);
+          total += parseInt(item.calories) || 0;
+        });
+      }
+
+      // Spor
+      if (state.exercises[state.selectedUser] && state.exercises[state.selectedUser][dayStr]) {
+        state.exercises[state.selectedUser][dayStr].forEach(item => {
+          const itemEl = document.createElement('div');
+          itemEl.className = 'item';
+          itemEl.innerHTML = `
+            ${item.name} - ${item.duration}
+            ${item.notes ? ` (${item.notes})` : ''}
+            <button class="delete" data-id="${item.id}">x</button>
+          `;
+          exerciseList.appendChild(itemEl);
+        });
+      }
+
+      totalCal.textContent = total;
+    }
+
+    // Formları aç/kapat
+    function toggleForm(formId) {
+      const form = document.getElementById(formId);
+      form.classList.toggle('active');
+    }
+
+    // Olaylar
+    document.addEventListener('DOMContentLoaded', () => {
+      initStorage();
+
+      // Kullanıcı seçimi
+      document.getElementById('userSelect').value = state.selectedUser;
+      document.getElementById('userSelect').addEventListener('change', (e) => {
+        state.selectedUser = e.target.value;
+        renderCalendar();
+        loadDailyData(getCurrentDayStr());
+      });
+
+      // Takvim kontrolü
+      document.getElementById('prevMonth').addEventListener('click', () => {
+        state.currentDate.setMonth(state.currentDate.getMonth() - 1);
+        renderCalendar();
+      });
+
+      document.getElementById('nextMonth').addEventListener('click', () => {
+        state.currentDate.setMonth(state.currentDate.getMonth() + 1);
+        renderCalendar();
+      });
+
+      // Görünüm geçişi
+      document.getElementById('viewMonth').addEventListener('click', () => {
+        state.currentView = 'month';
+        document.getElementById('viewMonth').classList.add('active');
+        document.getElementById('viewWeek').classList.remove('active');
+        renderCalendar();
+      });
+
+      document.getElementById('viewWeek').addEventListener('click', () => {
+        state.currentView = 'week';
+        document.getElementById('viewWeek').classList.add('active');
+        document.getElementById('viewMonth').classList.remove('active');
+        renderCalendar();
+      });
+
+      // Form butonları
+      document.getElementById('addFoodBtn').addEventListener('click', () => toggleForm('foodForm'));
+      document.getElementById('addExerciseBtn').addEventListener('click', () => toggleForm('exerciseForm'));
+
+      document.getElementById('cancelFood').addEventListener('click', () => toggleForm('foodForm'));
+      document.getElementById('cancelExercise').addEventListener('click', () => toggleForm('exerciseForm'));
+
+      // Kaydet butonları
+      document.getElementById('saveFood').addEventListener('click', () => {
+        const name = document.getElementById('foodName').value.trim();
+        const calories = document.getElementById('foodCalories').value.trim();
+        const meal = document.getElementById('foodMeal').value;
+
+        if (!name || !calories) return alert('Lütfen tüm alanları doldurun!');
+
+        const dayStr = getCurrentDayStr();
+        if (!state.foods[state.selectedUser]) state.foods[state.selectedUser] = {};
+        if (!state.foods[state.selectedUser][dayStr]) state.foods[state.selectedUser][dayStr] = [];
+
+        state.foods[state.selectedUser][dayStr].push({
+          id: Date.now().toString(),
+          name,
+          calories: parseInt(calories) || 0,
+          meal
+        });
+
+        saveStorage();
+        toggleForm('foodForm');
+        document.getElementById('foodName').value = '';
+        document.getElementById('foodCalories').value = '';
+        renderCalendar();
+        loadDailyData(dayStr);
+      });
+
+      document.getElementById('saveExercise').addEventListener('click', () => {
+        const name = document.getElementById('exerciseName').value.trim();
+        const duration = document.getElementById('exerciseDuration').value.trim();
+        const notes = document.getElementById('exerciseNotes').value.trim();
+
+        if (!name || !duration) return alert('Lütfen tüm zorunlu alanları doldurun!');
+
+        const dayStr = getCurrentDayStr();
+        if (!state.exercises[state.selectedUser]) state.exercises[state.selectedUser] = {};
+        if (!state.exercises[state.selectedUser][dayStr]) state.exercises[state.selectedUser][dayStr] = [];
+
+        state.exercises[state.selectedUser][dayStr].push({
+          id: Date.now().toString(),
+          name,
+          duration,
+          notes
+        });
+
+        saveStorage();
+        toggleForm('exerciseForm');
+        document.getElementById('exerciseName').value = '';
+        document.getElementById('exerciseDuration').value = '';
+        document.getElementById('exerciseNotes').value = '';
+        renderCalendar();
+        loadDailyData(dayStr);
+      });
+
+      // Silme
+      document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete')) {
+          const id = e.target.dataset.id;
+          const dayStr = getCurrentDayStr();
+
+          // Beslenme sil
+          if (state.foods[state.selectedUser] && state.foods[state.selectedUser][dayStr]) {
+            state.foods[state.selectedUser][dayStr] = state.foods[state.selectedUser][dayStr].filter(item => item.id !== id);
+          }
+
+          // Spor sil
+          if (state.exercises[state.selectedUser] && state.exercises[state.selectedUser][dayStr]) {
+            state.exercises[state.selectedUser][dayStr] = state.exercises[state.selectedUser][dayStr].filter(item => item.id !== id);
+          }
+
+          saveStorage();
+          loadDailyData(dayStr);
+        }
+      });
+
+      // Ayarlar Modal
+      document.getElementById('openSettings').addEventListener('click', () => {
+        document.getElementById('user1Name').value = state.users[0].name;
+        document.getElementById('user2Name').value = state.users[1].name;
+        document.getElementById('settingsModal').style.display = 'flex';
+      });
+
+      document.getElementById('closeSettings').addEventListener('click', () => {
+        document.getElementById('settingsModal').style.display = 'none';
+      });
+
+      document.getElementById('saveSettings').addEventListener('click', () => {
+        const name1 = document.getElementById('user1Name').value.trim();
+        const name2 = document.getElementById('user2Name').value.trim();
+
+        if (!name1 || !name2) return alert('İsimler boş olamaz!');
+
+        state.users[0].name = name1;
+        state.users[1].name = name2;
+
+        // Dropdown'u güncelle
+        const select = document.getElementById('userSelect');
+        select.innerHTML = '';
+        state.users.forEach(user => {
+          const opt = document.createElement('option');
+          opt.value = user.id;
+          opt.textContent = user.name;
+          select.appendChild(opt);
+        });
+
+        if (state.selectedUser === 'ayse') {
+          select.value = 'ayse';
+        } else {
+          select.value = 'ali';
+        }
+
+        saveStorage();
+        document.getElementById('settingsModal').style.display = 'none';
+      });
+
+      // Başlangıçta takvimi yükle
+      renderCalendar();
+      loadDailyData(getCurrentDayStr());
+    });
+
+    // Şu anki seçili günün stringini döndürür
+    function getCurrentDayStr() {
+      const selectedDayEl = document.querySelector('.calendar-day.selected');
+      if (!selectedDayEl) return new Date().toISOString().split('T')[0];
+
+      const dayNum = selectedDayEl.querySelector('.day-number').textContent;
+      
+      if (state.currentView === 'week') {
+        // Haftalık görünümde bugünün tarihini döndür
+        return new Date().toISOString().split('T')[0];
+      } else {
+        // Aylık görünümde seçili günün tarihini döndür
+        const month = state.currentDate.getMonth();
+        const year = state.currentDate.getFullYear();
+        const date = new Date(year, month, parseInt(dayNum));
+        return date.toISOString().split('T')[0];
+      }
+    }
+  </script>
+
+</body>
+</html>
