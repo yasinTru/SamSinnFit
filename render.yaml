@@ -2,8 +2,6 @@ services:
   - type: web
     name: samsin-fit
     env: static
-    buildCommand: npm install
-    startCommand: npm start
     plan: free
     staticPublishPath: ./
     headers:

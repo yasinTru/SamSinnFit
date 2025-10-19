@@ -28,17 +28,35 @@ function initStorage() {
     if (!state.foods[user.id]) state.foods[user.id] = {};
     if (!state.exercises[user.id]) state.exercises[user.id] = {};
   });
+  
+  // Debug: Veri yüklendiğini kontrol et
+  console.log('Veri yüklendi:', {
+    selectedUser: state.selectedUser,
+    users: state.users,
+    foods: Object.keys(state.foods),
+    exercises: Object.keys(state.exercises)
+  });
 }
 
 // Veriyi kaydet
 function saveStorage() {
-  localStorage.setItem('fitIkiliData', JSON.stringify({
+  const dataToSave = {
     foods: state.foods,
     exercises: state.exercises,
     users: state.users,
     selectedUser: state.selectedUser,
     currentDate: state.currentDate.toISOString()
-  }));
+  };
+  
+  localStorage.setItem('fitIkiliData', JSON.stringify(dataToSave));
+  
+  // Debug: Veri kaydedildiğini kontrol et
+  console.log('Veri kaydedildi:', {
+    selectedUser: state.selectedUser,
+    users: state.users,
+    foods: Object.keys(state.foods),
+    exercises: Object.keys(state.exercises)
+  });
 }
 
 // Takvim oluştur
@@ -219,6 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('userSelect').value = state.selectedUser;
   document.getElementById('userSelect').addEventListener('change', (e) => {
     state.selectedUser = e.target.value;
+    saveStorage(); // Seçili kullanıcıyı kaydet
     renderCalendar();
     loadDailyData(getCurrentDayStr());
   });
