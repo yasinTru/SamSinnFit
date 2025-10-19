@@ -11,16 +11,42 @@ const state = {
   exercises: {}
 };
 
+// localStorage kontrolü
+function isLocalStorageAvailable() {
+  try {
+    const test = '__localStorage_test__';
+    localStorage.setItem(test, test);
+    localStorage.removeItem(test);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 // Veri başlatma
 function initStorage() {
-  const saved = localStorage.getItem('fitIkiliData');
-  if (saved) {
-    const data = JSON.parse(saved);
-    state.foods = data.foods || {};
-    state.exercises = data.exercises || {};
-    state.users = data.users || state.users;
-    state.selectedUser = data.selectedUser || 'ayse';
-    state.currentDate = new Date(data.currentDate || new Date());
+  if (!isLocalStorageAvailable()) {
+    console.warn('localStorage mevcut değil (gizli sekme olabilir). Veriler geçici olarak saklanacak.');
+    // Gizli sekmede sessionStorage kullan
+    const saved = sessionStorage.getItem('fitIkiliData');
+    if (saved) {
+      const data = JSON.parse(saved);
+      state.foods = data.foods || {};
+      state.exercises = data.exercises || {};
+      state.users = data.users || state.users;
+      state.selectedUser = data.selectedUser || 'ayse';
+      state.currentDate = new Date(data.currentDate || new Date());
+    }
+  } else {
+    const saved = localStorage.getItem('fitIkiliData');
+    if (saved) {
+      const data = JSON.parse(saved);
+      state.foods = data.foods || {};
+      state.exercises = data.exercises || {};
+      state.users = data.users || state.users;
+      state.selectedUser = data.selectedUser || 'ayse';
+      state.currentDate = new Date(data.currentDate || new Date());
+    }
   }
 
   // Her kullanıcı için boş veri yapıları oluştur
@@ -34,7 +60,8 @@ function initStorage() {
     selectedUser: state.selectedUser,
     users: state.users,
     foods: Object.keys(state.foods),
-    exercises: Object.keys(state.exercises)
+    exercises: Object.keys(state.exercises),
+    storageType: isLocalStorageAvailable() ? 'localStorage' : 'sessionStorage'
   });
 }
 
@@ -48,14 +75,20 @@ function saveStorage() {
     currentDate: state.currentDate.toISOString()
   };
   
-  localStorage.setItem('fitIkiliData', JSON.stringify(dataToSave));
+  if (isLocalStorageAvailable()) {
+    localStorage.setItem('fitIkiliData', JSON.stringify(dataToSave));
+  } else {
+    // Gizli sekmede sessionStorage kullan
+    sessionStorage.setItem('fitIkiliData', JSON.stringify(dataToSave));
+  }
   
   // Debug: Veri kaydedildiğini kontrol et
   console.log('Veri kaydedildi:', {
     selectedUser: state.selectedUser,
     users: state.users,
     foods: Object.keys(state.foods),
-    exercises: Object.keys(state.exercises)
+    exercises: Object.keys(state.exercises),
+    storageType: isLocalStorageAvailable() ? 'localStorage' : 'sessionStorage'
   });
 }
 
@@ -140,23 +173,12 @@ function renderCalendar() {
 function selectDay(dayStr) {
   // Seçili günleri temizle
   document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
-  // Yeni seçiliği ekle
-  const selectedDayEl = [...document.querySelectorAll('.calendar-day')].find(d => {
-    const dayNumber = d.querySelector('.day-number');
-    if (!dayNumber) return false;
-    
-    if (state.currentView === 'week') {
-      // Haftalık görünümde tarih karşılaştırması yap
-      const date = new Date(dayStr);
-      const today = new Date();
-      return date.toDateString() === today.toDateString();
-    } else {
-      // Aylık görünümde gün numarası karşılaştırması yap
-      const date = new Date(dayStr);
-      return dayNumber.textContent === date.getDate().toString();
-    }
-  });
-  if (selectedDayEl) selectedDayEl.classList.add('selected');
+  
+  // Tıklanan elementi bul ve seçili yap
+  const clickedElement = event.target.closest('.calendar-day');
+  if (clickedElement) {
+    clickedElement.classList.add('selected');
+  }
 
   // Günlük verileri yükle
   loadDailyData(dayStr);
@@ -229,9 +251,54 @@ function getCurrentDayStr() {
   }
 }
 
+// Cross-tab synchronization
+window.addEventListener('storage', (e) => {
+  if (e.key === 'fitIkiliData') {
+    // Diğer sekmede veri değiştiğinde bu sekmeyi güncelle
+    const data = JSON.parse(e.newValue);
+    state.foods = data.foods || {};
+    state.exercises = data.exercises || {};
+    state.users = data.users || state.users;
+    state.selectedUser = data.selectedUser || 'ayse';
+    state.currentDate = new Date(data.currentDate || new Date());
+    
+    // UI'yi güncelle
+    renderCalendar();
+    loadDailyData(getCurrentDayStr());
+    
+    console.log('Diğer sekmeden veri güncellendi');
+  }
+});
+
 // Olaylar
 document.addEventListener('DOMContentLoaded', () => {
   initStorage();
+  
+  // Gizli sekme uyarısı
+  if (!isLocalStorageAvailable()) {
+    const warningDiv = document.createElement('div');
+    warningDiv.style.cssText = `
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: #ff6b6b;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 5px;
+      z-index: 10000;
+      font-size: 14px;
+      max-width: 300px;
+    `;
+    warningDiv.innerHTML = '⚠️ Gizli sekmede çalışıyorsunuz. Veriler sadece bu sekme açıkken saklanacak.';
+    document.body.appendChild(warningDiv);
+    
+    // 5 saniye sonra uyarıyı kaldır
+    setTimeout(() => {
+      if (warningDiv.parentNode) {
+        warningDiv.parentNode.removeChild(warningDiv);
+      }
+    }, 5000);
+  }
 
   // Kullanıcı seçimi
   document.getElementById('userSelect').value = state.selectedUser;
