@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: samsin-fit
+    env: static
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    staticPublishPath: ./
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-XSS-Protection
+        value: 1; mode=block
+      - path: /*
+        name: Strict-Transport-Security
+        value: max-age=31536000; includeSubDomains
