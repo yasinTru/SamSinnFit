@@ -2,130 +2,248 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SamSin - Beslenme & Spor Takibi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="theme-color" content="#f3f5f9" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f141a" media="(prefers-color-scheme: dark)">
+  <title>SamSinn Fitness - Beslenme & Spor Takibi</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <div class="container">
+  <!-- İkonlar -->
+  <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+    <symbol id="i-activity" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+  </svg>
+
+  <div class="loading" id="loading"><div class="spinner" aria-label="Yükleniyor"></div></div>
+
+  <!-- Giriş Ekranı -->
+  <main class="auth-screen" id="authScreen" hidden>
+    <div class="auth-card">
+      <div class="brand brand-lg">
+        <span class="brand-mark"><svg class="icon"><use href="#i-activity"/></svg></span>
+        <span>SamSinn Fitness</span>
+      </div>
+      <p class="auth-tagline">Beslenme ve spor kayıtlarınız, tüm cihazlarınızda.</p>
+      <p class="auth-message" id="authMessage" hidden></p>
+      <button class="btn btn-google" id="signInBtn">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+        Google ile giriş yap
+      </button>
+    </div>
+  </main>
+
+  <div class="app" id="app" hidden>
 
     <!-- Header -->
-    <header>
-      <div class="logo">SamSinn Fitness</div>
-      <div class="user-select">
-        <select id="userSelect">
-          <option value="ayse">Sema Hatun</option>
-          <option value="ali">Ya Sin</option>
-        </select>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark"><svg class="icon"><use href="#i-activity"/></svg></span>
+        <span class="brand-name">SamSinn Fitness</span>
       </div>
-      <button class="settings-btn" id="openSettings">⚙️</button>
+      <div class="segmented person-switch" id="personSwitch" role="group" aria-label="Kişi seçimi"></div>
+      <span class="status" id="status" hidden><span class="status-dot"></span><span id="statusText"></span></span>
+      <button class="icon-btn settings-btn" id="openSettings" aria-label="Ayarlar">
+        <svg class="icon"><use href="#i-settings"/></svg>
+      </button>
     </header>
 
-    <!-- Calendar Section -->
-    <section class="calendar-section">
-      <div class="calendar-header">
-        <div class="calendar-controls">
-          <button id="prevMonth">&lt;</button>
-          <h2 id="currentMonth">Ekim 2023</h2>
-          <button id="nextMonth">&gt;</button>
-        </div>
-        <div class="view-toggle">
-          <button id="viewMonth" class="active">Aylık</button>
-          <button id="viewWeek">Haftalık</button>
-        </div>
-      </div>
-      <div class="weekdays">
-        <div>Paz</div><div>Pzt</div><div>Sal</div><div>Çar</div><div>Per</div><div>Cuma</div><div>Cmt</div>
-      </div>
-      <div class="calendar" id="calendar"></div>
-    </section>
+    <div class="layout">
 
-    <!-- Daily Details -->
-    <section class="daily-details">
-      <!-- Beslenme -->
-      <div class="card">
-        <h3><span class="icon">🍎</span> BESLENME KAYDI</h3>
-        <div class="food-list" id="foodList">
-          <!-- Dinamik içerik -->
-        </div>
-        <div class="total">Toplam Kalori: <span id="totalCalories">0</span> kcal</div>
-        <button class="add-btn" id="addFoodBtn">+ Yeni Besin Ekle</button>
-        <div class="form-panel" id="foodForm">
-          <div class="form-group">
-            <label for="foodName">Yiyecek</label>
-            <input type="text" id="foodName" placeholder="Örn: Yulaf ezmesi">
-          </div>
-          <div class="form-group">
-            <label for="foodCalories">Kalori (kcal)</label>
-            <input type="number" id="foodCalories" placeholder="0" min="0">
-          </div>
-          <div class="form-group">
-            <label for="foodMeal">Öğün</label>
-            <select id="foodMeal">
-              <option value="sabah">Sabah</option>
-              <option value="ogle">Öğle</option>
-              <option value="aksam">Akşam</option>
-              <option value="ara">Ara Öğün</option>
-            </select>
-          </div>
-          <div class="form-actions">
-            <button class="btn-save" id="saveFood">Kaydet</button>
-            <button class="btn-cancel" id="cancelFood">İptal</button>
+      <!-- Takvim -->
+      <section class="card calendar-card" aria-label="Takvim">
+        <div class="calendar-header">
+          <h2 class="period-label" id="periodLabel"></h2>
+          <div class="calendar-nav">
+            <button class="btn btn-ghost btn-sm" id="todayBtn">Bugün</button>
+            <button class="icon-btn" id="prevPeriod" aria-label="Önceki"><svg class="icon"><use href="#i-chevron-left"/></svg></button>
+            <button class="icon-btn" id="nextPeriod" aria-label="Sonraki"><svg class="icon"><use href="#i-chevron-right"/></svg></button>
           </div>
         </div>
-      </div>
+        <div class="segmented view-toggle" role="group" aria-label="Görünüm">
+          <button id="viewWeek" aria-pressed="false">Hafta</button>
+          <button id="viewMonth" aria-pressed="true">Ay</button>
+        </div>
+        <div class="weekdays" aria-hidden="true">
+          <div>Pzt</div><div>Sal</div><div>Çar</div><div>Per</div><div>Cum</div><div>Cmt</div><div>Paz</div>
+        </div>
+        <div class="calendar" id="calendar"></div>
+        <div class="legend" aria-hidden="true">
+          <span><span class="dot dot-food"></span> Beslenme</span>
+          <span><span class="dot dot-exercise"></span> Spor</span>
+        </div>
+      </section>
 
-      <!-- Spor -->
-      <div class="card">
-        <h3><span class="icon">🏋️‍♂️</span> SPOR KAYDI</h3>
-        <div class="exercise-list" id="exerciseList">
-          <!-- Dinamik içerik -->
+      <!-- Seçili gün -->
+      <div class="day-panel" id="dailyDetails">
+        <div class="day-heading">
+          <h2 id="selectedDateLabel"></h2>
+          <span class="badge" id="todayBadge" hidden>Bugün</span>
         </div>
-        <button class="add-btn" id="addExerciseBtn">+ Yeni Spor Ekle</button>
-        <div class="form-panel" id="exerciseForm">
-          <div class="form-group">
-            <label for="exerciseName">Aktivite</label>
-            <input type="text" id="exerciseName" placeholder="Örn: Koşu, Şınav">
-          </div>
-          <div class="form-group">
-            <label for="exerciseDuration">Süre / Tekrar</label>
-            <input type="text" id="exerciseDuration" placeholder="Örn: 30 dk, 3x10">
-          </div>
-          <div class="form-group">
-            <label for="exerciseNotes">Notlar (opsiyonel)</label>
-            <input type="text" id="exerciseNotes" placeholder="İsteğe bağlı">
-          </div>
-          <div class="form-actions">
-            <button class="btn-save" id="saveExercise">Kaydet</button>
-            <button class="btn-cancel" id="cancelExercise">İptal</button>
-          </div>
-        </div>
-      </div>
-    </section>
 
-  </div>
+        <section class="card summary-card" aria-label="Günlük özet">
+          <div class="ring" id="calorieRing">
+            <div class="ring-inner">
+              <strong id="totalCalories">0</strong>
+              <span>kcal</span>
+            </div>
+          </div>
+          <div class="summary-text">
+            <p class="summary-main" id="summaryMain"></p>
+            <p class="summary-sub" id="summarySub"></p>
+            <p class="summary-exercise"><span class="dot dot-exercise"></span> <span id="exerciseSummary"></span></p>
+          </div>
+        </section>
 
-  <!-- Ayarlar Modal -->
-  <div class="modal" id="settingsModal">
-    <div class="modal-content">
-      <h2>Kişi Ayarları</h2>
-      <div class="form-group">
-        <label for="user1Name">Kişi 1 Adı:</label>
-        <input type="text" id="user1Name" value="Sema Hatun">
-      </div>
-      <div class="form-group">
-        <label for="user2Name">Kişi 2 Adı:</label>
-        <input type="text" id="user2Name" value="Ya Sin">
-      </div>
-      <div class="form-actions">
-        <button class="btn-cancel" id="closeSettings">İptal</button>
-        <button class="btn-save" id="saveSettings">Kaydet</button>
+        <section class="card">
+          <div class="card-header">
+            <h3><span class="section-icon food">🍎</span> Beslenme</h3>
+            <span class="card-meta" id="foodTotal"></span>
+          </div>
+          <div id="mealGroups"></div>
+          <button class="btn btn-soft btn-block" id="addFoodBtn"><svg class="icon"><use href="#i-plus"/></svg> Besin ekle</button>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <h3><span class="section-icon exercise">🏋️‍♂️</span> Spor</h3>
+            <span class="card-meta" id="exerciseCount"></span>
+          </div>
+          <div class="entry-list" id="exerciseList"></div>
+          <button class="btn btn-soft btn-block" id="addExerciseBtn"><svg class="icon"><use href="#i-plus"/></svg> Aktivite ekle</button>
+        </section>
       </div>
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <!-- Besin ekle / düzenle -->
+  <dialog class="sheet" id="foodSheet" aria-labelledby="foodSheetTitle">
+    <form class="sheet-body" id="foodForm">
+      <div class="sheet-header">
+        <h2 id="foodSheetTitle">Besin ekle</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Kapat"><svg class="icon"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="quick-picks" id="foodQuickPicks" hidden>
+        <p class="field-label">Son eklenenler</p>
+        <div class="chips" id="foodChips"></div>
+      </div>
+      <div class="form-group">
+        <label for="foodName">Yiyecek</label>
+        <input type="text" id="foodName" list="foodSuggestions" autocomplete="off" placeholder="Örn: Yulaf ezmesi" required pattern=".*\S.*" maxlength="100">
+        <datalist id="foodSuggestions"></datalist>
+      </div>
+      <div class="form-group">
+        <label for="foodCalories">Kalori</label>
+        <div class="input-suffix">
+          <input type="number" id="foodCalories" inputmode="numeric" placeholder="0" required min="0" max="20000" step="1">
+          <span>kcal</span>
+        </div>
+      </div>
+      <fieldset class="form-group">
+        <legend>Öğün</legend>
+        <div class="segmented meal-picker">
+          <label><input type="radio" name="meal" value="sabah" checked><span>Sabah</span></label>
+          <label><input type="radio" name="meal" value="ogle"><span>Öğle</span></label>
+          <label><input type="radio" name="meal" value="aksam"><span>Akşam</span></label>
+          <label><input type="radio" name="meal" value="ara"><span>Ara</span></label>
+        </div>
+      </fieldset>
+      <div class="sheet-actions">
+        <button type="button" class="btn btn-danger-ghost" data-delete hidden>Sil</button>
+        <button type="submit" class="btn btn-primary btn-save">Kaydet</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Aktivite ekle / düzenle -->
+  <dialog class="sheet" id="exerciseSheet" aria-labelledby="exerciseSheetTitle">
+    <form class="sheet-body" id="exerciseForm">
+      <div class="sheet-header">
+        <h2 id="exerciseSheetTitle">Aktivite ekle</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Kapat"><svg class="icon"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="quick-picks" id="exerciseQuickPicks" hidden>
+        <p class="field-label">Son eklenenler</p>
+        <div class="chips" id="exerciseChips"></div>
+      </div>
+      <div class="form-group">
+        <label for="exerciseName">Aktivite</label>
+        <input type="text" id="exerciseName" list="exerciseSuggestions" autocomplete="off" placeholder="Örn: Koşu, Şınav" required pattern=".*\S.*" maxlength="100">
+        <datalist id="exerciseSuggestions"></datalist>
+      </div>
+      <div class="form-group">
+        <label for="exerciseDuration">Süre / Tekrar</label>
+        <input type="text" id="exerciseDuration" placeholder="Örn: 30 dk, 3x10" required pattern=".*\S.*" maxlength="100">
+      </div>
+      <div class="form-group">
+        <label for="exerciseNotes">Notlar (opsiyonel)</label>
+        <input type="text" id="exerciseNotes" placeholder="İsteğe bağlı" maxlength="300">
+      </div>
+      <div class="sheet-actions">
+        <button type="button" class="btn btn-danger-ghost" data-delete hidden>Sil</button>
+        <button type="submit" class="btn btn-primary btn-save">Kaydet</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Ayarlar -->
+  <dialog class="sheet" id="settingsSheet" aria-labelledby="settingsTitle">
+    <form class="sheet-body" id="settingsForm">
+      <div class="sheet-header">
+        <h2 id="settingsTitle">Ayarlar</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Kapat"><svg class="icon"><use href="#i-x"/></svg></button>
+      </div>
+      <div id="peopleFields"></div>
+      <div class="account" id="accountSection">
+        <p class="field-label">Hesap</p>
+        <div class="account-row">
+          <span class="account-email" id="accountEmail"></span>
+          <button type="button" class="btn btn-ghost btn-sm" id="signOutBtn">Çıkış yap</button>
+        </div>
+      </div>
+      <p class="hint" id="localModeHint" hidden>Yerel mod: kayıtlar sadece bu cihazda saklanıyor. Cihazlar arası eşitleme için README'deki Firebase kurulumunu yapın.</p>
+      <div class="sheet-actions">
+        <button type="submit" class="btn btn-primary btn-save">Kaydet</button>
+      </div>
+    </form>
+  </dialog>
+
+  <template id="personFieldsTemplate">
+    <fieldset class="person-fields">
+      <legend></legend>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Ad</label>
+          <input type="text" name="name" required pattern=".*\S.*" maxlength="40">
+        </div>
+        <div class="form-group">
+          <label>Günlük hedef</label>
+          <div class="input-suffix">
+            <input type="number" name="goal" inputmode="numeric" min="0" max="20000" step="1" placeholder="Opsiyonel">
+            <span>kcal</span>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </template>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden>
+    <span id="toastText"></span>
+    <button class="toast-action" id="toastAction" hidden></button>
+  </div>
+
+  <script type="module" src="script.js"></script>
 
 </body>
 </html>
